@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать этап собеседования</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+{% include "header.html" %}
+<body>
+    <div class="container">
+        <h1 class="mt-5">Отправить обратную связь</h1>
+        <form id="feedback_form" class="mt-3">
+            <div class="form-group">
+                <label for="result_link">Ссылка на результат</label>
+                <a href= "http://{{phase.result_link}}" type="text" class="form-control" disabled>{{phase.result_link}}</a>
+            </div>
+            <div class="form-group">
+                <label for="passed">Пройдено</label>
+                <select id="passed" name="passed" class="form-control" disabled>
+                    <option value="true" {% if phase.passed %}selected{% endif %}>Да</option>
+                    <option value="false" {% if not phase.passed %}selected{% endif %}>Нет</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="feedback">Обратная связь</label>
+                <textarea id="feedback" name="feedback" class="form-control" rows="4" value="{{phase.feedback}}">{{phase.feedback}}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('feedback_form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {};
+            data["feedback_send"] = true;
+            formData.forEach((value, key) => {
+                  if (key === 'feedback'){
+                    data[key] = value;}
+                });
+
+            const phaseId = {{ phase.id }};
+            const response = await fetch(`/api/v1/phases/${phaseId}/send_feedback`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Фидбэк отправлен!');
+                window.location.href = `/api/v1/candidates/{{phase.candidate_id}}`;
+            } else {
+                alert('Ошибка при отправке Фидбэка');
+            }
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

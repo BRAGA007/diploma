@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить вакансию</title>
+    <!-- Подключение Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+{% include "header.html" %}
+<body>
+    <div class="container">
+        <h1 class="mt-5">Добавить вакансию</h1>
+        <form id="create-vacancy-form" class="mt-3">
+            <div class="form-group">
+                <label for="title">Название</label>
+                <input type="text" id="title" name="title" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Описание</label>
+                <textarea id="description" name="description" class="form-control" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="specialization_list">Список специализаций</label>
+                <input type="text" id="specialization_list" name="specialization_list" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="head_of_department_id">Руководитель отдела</label>
+                <select id="head_of_department_id" name="head_of_department_id" class="form-control" required>
+                    {% for user in head_spec %}
+                        <option value="{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</option>
+                    {% endfor %}
+
+
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Создать</button>
+        </form>
+    </div>
+    <script>
+        async function fetchTechSpecs() {
+            const select = document.getElementById('head_of_department_id');
+
+            techSpecs.forEach(spec => {
+                const option = document.createElement('option');
+                option.value = spec.id;
+                option.textContent = spec.last_name + " " + spec.first_name + " " +spec.middle_name;
+                select.appendChild(option);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchTechSpecs);
+
+        document.getElementById('create-vacancy-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {};
+            formData.forEach((value, key) => {
+                if (key === 'specialization_list') {
+                    data[key] = value.split(',').map(item => item.trim());
+                } else {
+                    data[key] = value;
+                }
+            });
+
+            const response = await fetch('/api/v1/vacancies/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Vacancy created successfully!');
+                window.location.href = '/api/v1/vacancies';
+            } else {
+                alert('Error creating vacancy');
+            }
+        });
+    </script>
+    <!-- Подключение Bootstrap JS и зависимости -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

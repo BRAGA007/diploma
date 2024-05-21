@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Добавить первичную информацию о кандидате</title>
+</head>
+{% include "header.html" %}
+<body>
+
+    <div class="container mt-5">
+        <h1>Добавить первичную информацию о кандидате</h1>
+        <form id="candidate-phase-form" action="/api/v1/vacancies/{{ vacancy_id }}/add_candidate" method="post">
+            <h3>Информация о кандидате</h3>
+            <div class="mb-3">
+                <label for="status" class="form-label">Статус</label>
+                <select class="form-control" id="status" name="status">
+                    {% for status in candidate_statuses %}
+                    <option value="{{ status }}">{{ status }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="first_name" class="form-label">Имя</label>
+                <input type="text" class="form-control" id="first_name" name="first_name" required>
+            </div>
+            <div class="mb-3">
+                <label for="last_name" class="form-label">Фамилия</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" required>
+            </div>
+            <div class="mb-3">
+                <label for="middle_name" class="form-label">Отчество</label>
+                <input type="text" class="form-control" id="middle_name" name="middle_name">
+            </div>
+            <div class="mb-3">
+                <label for="telegram" class="form-label">Telegram</label>
+                <input type="text" class="form-control" id="telegram" name="telegram">
+            </div>
+            <div class="mb-3">
+                <label for="resume_link" class="form-label">Ссылка на резюме</label>
+                <input type="text" class="form-control" id="resume_link" name="resume_link">
+            </div>
+
+
+            <h3>Дополнительная информация</h3>
+            <div class="mb-3">
+                <label for="phase_type" class="form-label">Тип взаимодействия</label>
+                <select class="form-control" id="phase_type" name="phase_type">
+                    {% for phase in phase_types %}
+                    <option value="{{ phase }}">{{ phase }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+<!--            <div class="mb-3">-->
+<!--                <label for="interviewer_id" class="form-label">Интервьюер</label>-->
+<!--                <select class="form-control" id="interviewer_id" name="interviewer_id">-->
+<!--                    {% for tech_spec in tech_specs_list %}-->
+<!--                    <option value="{{ tech_spec.id }}">{{ tech_spec.first_name }} {{ tech_spec.last_name }}</option>-->
+<!--                    {% endfor %}-->
+<!--                </select>-->
+<!--            </div>-->
+            <div class="mb-3">
+                <label for="result_link" class="form-label">Ссылка на дополнительную информацию</label>
+                <input type="text" class="form-control" id="result_link" name="result_link">
+            </div>
+            <div class="mb-3">
+                <label for="date" class="form-label">Дата получения</label>
+                <input type="datetime-local" class="form-control" id="date" name="date">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Создать</button>
+        </form>
+    </div>
+</body>
+<script>
+        document.getElementById('candidate-phase-form').addEventListener('submit', async function(event) {
+
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {};
+            formData.forEach((value, key) => {
+                if (key === 'specialization_list') {
+                    data[key] = value.split(',').map(item => item.trim());
+                } else {
+                    data[key] = value;
+                }
+            });
+
+            try {
+                const response = await fetch('http://localhost:8088/api/v1/vacancies/{{ vacancy_id }}/add_candidate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    window.location.href = '/api/v1/candidates'; // или любой другой URL для успешного создания
+                } else {
+                    const errorText = await response.text();
+                    alert('Error: ' + errorText);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred');
+            }
+        });
+    </script>
+
+</html>

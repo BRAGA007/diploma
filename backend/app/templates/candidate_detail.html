@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+{% include "header.html" %}
+<body>
+    <div class="container mt-5">
+        <h1>Личная информация о кандидате</h1>
+        <form id="candidate-form">
+            <input type="hidden" id="candidate_id" value="{{ candidate.id }}">
+            <div class="mb-3">
+                <label for="first_name" class="form-label">Статус</label>
+                <input type="text" class="form-control" id="status" name="status" value="{{ candidate.status }}" disabled>
+            </div>
+            <div class="mb-3">
+                <label for="first_name" class="form-label">Имя</label>
+                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ candidate.first_name }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="last_name" class="form-label">Фамилия</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ candidate.last_name }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="middle_name" class="form-label">Отчество</label>
+                <input type="text" class="form-control" id="middle_name" name="middle_name" value="{{ candidate.middle_name }}">
+            </div>
+            <div class="mb-3">
+                <label for="telegram" class="form-label">Telegram</label>
+                <input type="text" class="form-control" id="telegram" name="telegram" value="{{ candidate.telegram }}">
+            </div>
+            <div class="mb-3">
+                <label for="resume_link" class="form-label">Ссылка на резюме:</label> <a href="http://{{ candidate.resume_link }}" class="btn btn-secondary">Открыть</a>
+                <input type="text" class="form-control" id="resume_link" name="resume_link" value="{{ candidate.resume_link }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Обновить</button>
+        </form>
+            {% if candidate.status == 'ожидание предложения о работе' %}
+            <h2> ------------Ожидание решения кандидата по поводу работы--------------</h2>
+            {% endif %}
+        <h3 class="mt-5">Пройденные интервью</h3>
+        <div class="mv-5">
+            {% if candidate.status == 'первичная коммуникация' %}
+            <a href="/api/v1/phases/candidate/{{ candidate.id }}/technical" class="btn btn-info">Добавить техническое интервью</a>
+            {% endif %}
+
+            {% if candidate.status == 'успешное техническое собеседование' %}
+            <a href="/api/v1/phases/candidate/{{ candidate.id }}/final" class="btn btn-info">Добавить финальное интервью</a>
+            {% endif %}
+
+
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Вакансия</th>
+                    <th>Тип этапа</th>
+                    <th>Интервьюер</th>
+                    <th>Контакт интервьюера</th>
+                    <th>Ссылка на результаты интервью</th>
+                    <th>Дата</th>
+                    <th>Успешно</th>
+                    <th>Обратная связь</th>
+                    <th>Отправить обратную связь кандидату</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for phase in candidate_phases %}
+                <tr>
+                    <td><a href="/api/v1/vacancies/{{phase.vacancy.id}}/detail">{{ phase.vacancy.title }}</a></td>
+                    <td>{{ phase.phase_type }}</td>
+                    <td>{{ phase.interviewer.first_name }} {{ phase.interviewer.last_name }}</td>
+                    <td>{{ phase.interviewer.email }}</td>
+                    <td><a href="http://{{ phase.result_link }}">Просмотр</a></td>
+                    <td>{{ phase.date }}</td>
+                    <td>{% if phase.passed %}Да{% endif %}{% if phase.passed == False %}Нет{% endif %}</td>
+                    <td><p>{% if phase.feedback %}{{ phase.feedback[:1] }}...{% endif %}</p></td>
+
+                    <td>
+                            {% if phase.feedback_send %}<a>Отправлена</a>
+                            {% else %}
+                          {% if phase.phase_type != 'Первичная коммуникация' and phase.feedback %}<a href="/api/v1/phases/{{ phase.id }}/send_feedback" class="btn btn-primary">Отправить</a> {% endif %}
+                        {% endif %}
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+        document.getElementById('candidate-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const candidateId = document.getElementById('candidate_id').value;
+            const formData = new FormData(event.target);
+            const formDataJson = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch(`/api/v1/candidates/${candidateId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formDataJson)
+                });
+
+                if (response.ok) {
+                    alert('Candidate updated successfully');
+                } else {
+                    const errorText = await response.text();
+                    alert('Error: ' + errorText);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred');
+            }
+        });
+    </script>
+</body>
+</html>

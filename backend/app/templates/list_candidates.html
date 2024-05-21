@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List of Candidates</title>
+    <!-- Подключение Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+{% include "header.html" %}
+<body>
+    <div class="container">
+        <h1 class="mt-5">Список Кандидатов</h1>
+        <div class="mb-3">
+            <a href="/api/v1/candidates/add" class="btn btn-primary">Добавить нового кандидата</a>
+        </div>
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Имя</th>
+                    <th>Фамилия</th>
+                    <th>Отчество</th>
+                    <th>Статус</th>
+                    <th>Telegram</th>
+                    <th>Ссылка на резюме</th>
+                    <th>Подробнее</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for candidate in candidates %}
+                <tr>
+                    <td>{{ candidate.first_name }}</td>
+                    <td>{{ candidate.last_name }}</td>
+                    <td>{{ candidate.middle_name }}</td>
+                    <td>{{ candidate.status }}</td>
+                    <td><a href="https://t.me/{{ candidate.telegram }}">{{ candidate.telegram }}</a></td>
+                    <td><a href="http://{{ candidate.resume_link }}" target="_blank">Резюме</a></td>
+                    <td><a href="/api/v1/candidates/{{ candidate.id }}" class="btn btn-info">Просмотр профиля</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Подключение Bootstrap JS и зависимости -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

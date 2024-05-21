@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Все вакансии</title>
+    <!-- Подключение Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    {% include "header.html" %}
+    <div class="container mt-8">
+        <h1>Все вакансии</h1>
+        <div class="mb-3">
+            <a href="/api/v1/vacancies/add" class="btn btn-primary">Добавить новую вакансию</a>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Описание</th>
+                    <th>Специализации</th>
+                    <th>Рекрутер</th>
+                    <th>Контакт рекрутера</th>
+                    <th>Рук. отдела</th>
+                    <th>Контакт рук. отдела</th>
+                    <th>Подробнее</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vacancy in vacancies %}
+                <tr>
+                    <td>{{ vacancy.title }}</td>
+                    <td>{{ vacancy.description }}</td>
+                    <td>{{ vacancy.specialization_list }}</td>
+                    <td>{{ vacancy.recruiter.first_name}} {{vacancy.recruiter.last_name}}</td>
+                    <td>{{ vacancy.recruiter.email }}</td>
+                    <td>{{ vacancy.head_of_department.first_name}} {{vacancy.head_of_department.last_name}}</td>
+                    <td>{{ vacancy.head_of_department.email }}</td>
+                    <td><a href="/api/v1/vacancies/{{ vacancy.id }}/detail" class="btn btn-info">Просмотр вакансии</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Подключение Bootstrap JS и зависимости -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

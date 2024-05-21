@@ -142,17 +142,4 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# static files generated from Django application using `collectstatic`
-media
-static
 
-# Custom
-docker-stack.yml
-.DS_Store
-secrets/*.env
-airflow
-backend
-broker_hadoop
-broker_igor
-frontend
-igor-connector

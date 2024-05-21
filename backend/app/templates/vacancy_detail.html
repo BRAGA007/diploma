@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Вакансия</title>
+
+</head>
+{% include "header.html" %}
+<body>
+
+    <div class="container mt-5">
+
+        <h1>Вакансия</h1><div class="mb-3">
+            <a href="/api/v1/vacancies/{{vacancy.id}}/add_candidate" class="btn btn-success">Добавить нового кандидата</a>
+        </div>
+        <form id="vacancyForm">
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title" name="title" value="{{ vacancy.title }}">
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Описание</label>
+                <textarea class="form-control" id="description" name="description">{{ vacancy.description }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Список специализация</label>
+                <textarea class="form-control" id="specialization_list" name="specialization_list">{{ spec }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="recruiter" class="form-label">Рекрутер</label>
+                <input type="text" class="form-control" id="recruiter" name="recruiter" value="{{ vacancy.recruiter.first_name }} {{ vacancy.recruiter.last_name }}" disabled>
+            </div>
+            <div class="mb-3">
+                <label for="head_of_department" class="form-label">Руководитель отдела</label>
+                <input type="text" class="form-control" id="head_of_department" name="head_of_department" value="{{ vacancy.head_of_department.first_name }} {{ vacancy.head_of_department.last_name }}" disabled>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="updateVacancy()">Сохранить изменения</button>
+        </form>
+
+    </div>
+
+   <script>
+        async function updateVacancy() {
+            const vacancyId = {{ vacancy.id }};
+            const formData = new FormData(document.getElementById('vacancyForm'));
+            const data = {
+                title: formData.get('title'),
+                description: formData.get('description'),
+                specialization_list: formData.get('specialization_list').split(',').map(s => s.trim())
+            };
+
+            const response = await fetch(`/api/v1/vacancies/${vacancyId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (response.ok) {
+                 window.location.href = '/api/v1/vacancies';
+            } else {
+                alert('Failed to update vacancy.');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Все вакансии</title>
+    <!-- Подключение Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    {% include "header.html" %}
+    <div class="container mt-8">
+        <h1>Все собеседования</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Вакансия</th>
+                    <th>Канидадат</th>
+                    <th>Интервьюер</th>
+                    <th>Контакты интервьюера</th>
+                    <th>Тип собеседования</th>
+                    <th>Ссылка на результаты</th>
+                    <th>Дата</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for phase in phases %}
+                <tr>
+                    <td><a href="/api/v1/vacancies/{{ phase.vacancy.id }}/detail">{{ phase.vacancy.title }}</a></td>
+                    <td><a href="/api/v1/candidates/{{ phase.candidate.id }}">{{ phase.candidate.first_name }} {{ phase.candidate.last_name }}</a></td>
+                    <td>{{ phase.interviewer.first_name }} {{ phase.interviewer.last_name }}</td>
+                    <td>{{ phase.interviewer.email}}</td>
+                    <td>{{ phase.phase_type }}</td>
+                    <td><a href = "https://{{ phase.result_link }}">{{ phase.result_link }}</a></td>
+                    <td>{% if phase.passed %}Да{% endif %}{% if phase.passed == False %}Нет{% endif %}</td>
+                    <td>{{ phase.date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Подключение Bootstrap JS и зависимости -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+
+<!-- Пример ссылки с текстом, при нажатии на который будет производиться перенаправление -->
+</body>
+</html>

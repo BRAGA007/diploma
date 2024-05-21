@@ -1,0 +1,31 @@
+[project]
+name = "Diplom"
+version = "0.1"
+description = "DataOps Portal backend application"
+#
+#[tool.mypy]
+#python_version = "3.11"
+#exclude = 'tests/|venv/|env/|alembic/'
+## ignore typing in third-party packages
+#ignore_missing_imports = true
+#plugins = "pydantic.mypy"
+#
+#[tool.black]
+#line-length = 120
+#target-version = ['py311']
+#include = '\.pyi?$'
+#force-exclude = '''
+#(
+# \.git
+#| \.mypy_cache
+#| venv/
+#| env/
+#| alembic/
+#)
+#'''
+#
+#[tool.isort]
+#profile = "black"
+#known_local_folder = ["app"]
+#lines_after_imports = 2
+#extend_skip = ["app/alembic/versions"]

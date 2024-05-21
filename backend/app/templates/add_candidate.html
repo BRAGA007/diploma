@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить нового кандидата</title>
+    <!-- Подключение Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+{% include "header.html" %}
+<body>
+    <div class="container">
+        <h1 class="mt-5">Добавить кандидата</h1>
+        <form id="add-candidate-form" class="mt-3">
+            <div class="form-group">
+                <label for="status">Статус:</label>
+                <select id="status" name="status" class="form-control" required>
+                    <option value="первичная коммуникация">первичная коммуникация</option>
+                    <option value="ожидание технического собеседования">ожидание технического собеседования</option>
+                    <option value="неуспешное техническое собеседование">неуспешное техническое собеседование</option>
+                    <option value="ожидание финального собеседования">ожидание финального собеседования</option>
+                    <option value="неуспешное финальное собеседование">неуспешное финальное собеседование</option>
+                    <option value="ожидание предложения о работе">ожидание предложения о работе</option>
+                    <option value="отказ от предложения о работе">отказ от предложения о работе</option>
+                    <option value="приглашение о работе принято">приглашение о работе принято</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="first_name">Имя</label>
+                <input type="text" id="first_name" name="first_name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="last_name">Фамилия</label>
+                <input type="text" id="last_name" name="last_name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="middle_name">Отчество</label>
+                <input type="text" id="middle_name" name="middle_name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="telegram">Telegram</label>
+                <input type="text" id="telegram" name="telegram" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="resume_link">Ссылка на резюме</label>
+                <input type="text" id="resume_link" name="resume_link" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Добавить кандидата</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('add-candidate-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {};
+            formData.forEach((value, key) => data[key] = value);
+
+            const response = await fetch('/api/v1/candidates/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                window.location.href = '/api/v1/candidates';
+            } else {
+                alert('Error creating candidate');
+            }
+        });
+    </script>
+    <!-- Подключение Bootstrap JS и зависимости -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
