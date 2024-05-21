@@ -1,0 +1,50 @@
+version: "3.8"
+
+x-logging: &logging_common
+  logging:
+    driver: "json-file"
+    options:
+      max-file: "10"
+      max-size: "10m"
+
+
+x-backend-common: &backend_common
+  build:
+    context: ./backend
+    dockerfile: ./docker/Dockerfile
+    args:
+      STAGE: dev
+  env_file:
+    - secrets/portal.env
+  volumes:
+    - ./backend/app:/portal/app
+  restart: unless-stopped
+  depends_on:
+    db:
+      condition: service_healthy
+  <<: *logging_common
+
+services:
+  api:
+    <<: *backend_common
+    container_name: diplom-portal-api
+    command: [ "/portal/scripts/start-reload.sh" ]
+    ports:
+      - "8088:8080"
+
+  db:
+    container_name: diplom-portal-db
+    image: postgres:15
+    restart: unless-stopped
+    ports:
+      - "5444:5432"
+    env_file:
+      - secrets/portal.env
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data/pgdata
+    <<: *logging_common
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
